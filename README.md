@@ -3,7 +3,12 @@ Remote execution tools for Windows that rely only on WMI and PowerShell.
 
 Execute console commands remotely ***and*** capture stdout/stderr streams without relying on PowerShell Remoting, WinRM or PsExec.
 
-Check out the video here: https://youtu.be/mawaWckfViw
+
+### Blog post and video about this technique.
+[Check it out](https://systemfrontier.com/blog/running-remote-commands-and-actually-getting-the-output-using-only-wmi/)
+
+<br />
+<br />
 
 Twitter
 https://twitter.com/OneScripter
