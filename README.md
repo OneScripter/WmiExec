@@ -8,5 +8,5 @@ Check out the video here: https://youtu.be/mawaWckfViw
 Twitter
 https://twitter.com/OneScripter
 
-Do even more cool stuff like create web GUIs for your PowerShell scripts that leverage RBC, using System Frontier.
+Do even more cool stuff like create web GUIs for your PowerShell scripts that leverage RBAC, using System Frontier.
 https://systemfrontier.com/powershell
