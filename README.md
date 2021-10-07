@@ -8,11 +8,11 @@ Execute console commands remotely ***and*** capture stdout/stderr streams withou
 
 [Blog post and video about this technique.](https://systemfrontier.com/blog/running-remote-commands-and-actually-getting-the-output-using-only-wmi/)
 
-The below shows you how WmiExec can accept the command string as value from the pipeline.
+The example below shows you how WmiExec can accept the command string as a value from the pipeline.
 
 ```powershell
-PS C:\ "Get-ChildItem C:\" | .\WmiExec.ps1 -ComputerName "hostname"
-Running the below command on: SIN-L00133...
+PS C:\ "Get-ChildItem C:\" | .\WmiExec.ps1 -ComputerName "server1"
+Running the following command on: server1...
 Get-ChildItem C:\
 PID: 5580 - Waiting for remote command to finish...
 PID: 5580 - Waiting for remote command to finish...
@@ -31,11 +31,11 @@ d-r---       10.10.2019     10:51                Users
 d-----       10.10.2019     16:00                Windows
 ```
 
-The below shows you the object type that is returned.
+The example below shows you the object type that is returned.
 
 ```powershell
-PS C:\ $result = .\WmiExec.ps1 -ComputerName "hostname" -Command "Get-ChildItem C:\"
-Running the below command on: hostname...
+PS C:\ $result = .\WmiExec.ps1 -ComputerName "server1" -Command "Get-ChildItem C:\"
+Running the following command on: server1...
 Get-ChildItem C:\
 PID: 5580 - Waiting for remote command to finish...
 PID: 5580 - Waiting for remote command to finish...
