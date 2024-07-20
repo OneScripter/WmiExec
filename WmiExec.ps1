@@ -1,4 +1,4 @@
-﻿<#        
+<#        
     .SYNOPSIS
      Execute command remotely and capture output, using only WMI.
      Copyright (c) Noxigen LLC. All rights reserved.
@@ -32,18 +32,22 @@
 Param(
 	[string]$ComputerName,
 	[Parameter(ValueFromPipeline=$true)]
-	[string]$Command
+	[string]$Command,
+	[switch]$Silent
 )
 
 function CreateScriptInstance([string]$ComputerName)
 {
 	# Check to see if our custom WMI class already exists
-	$classCheck = Get-WmiObject -Class Noxigen_WmiExec -ComputerName $ComputerName -List -Namespace "root\cimv2"
+	$classCheck = Get-WmiObject -Class Noxigen_WmiExec -ComputerName $ComputerName -List -Namespace "root\cimv2" -ErrorAction SilentlyContinue
 	
-	if ($classCheck -eq $null)
+	if ($null -eq $classCheck)
 	{
 		# Create a custom WMI class to store data about the command, including the output.
-		Write-Host "Creating WMI class..."
+		if ($Silent.IsPresent -eq $false) {
+			Write-Host "Creating WMI class..."
+		}
+		
 		$newClass = New-Object System.Management.ManagementClass("\\$ComputerName\root\cimv2",[string]::Empty,$null)
 		$newClass["__CLASS"] = "Noxigen_WmiExec"
 		$newClass.Qualifiers.Add("Static",$true)
@@ -85,18 +89,22 @@ function ExecCommand([string]$ComputerName, [string]$Command)
 		{
 			if ($started.AddMinutes(2) -lt (Get-Date))
 			{
-				Write-Host "PID: $($process.ProcessId) - Response took too long."
+				if ($Silent.IsPresent -eq $false) {
+					Write-Host "PID: $($process.ProcessId) - Response took too long."
+				}
 				break
 			}
 			
 			# TODO: Add timeout
 			$watcher = Get-WmiObject -ComputerName $ComputerName -Class Win32_Process -Filter "ProcessId = $($process.ProcessId)"
 			
-			Write-Host "PID: $($process.ProcessId) - Waiting for remote command to finish..."
+			if ($Silent.IsPresent -eq $false) {
+				Write-Host "PID: $($process.ProcessId) - Waiting for remote command to finish..."
+			}
 			
 			Start-Sleep -Seconds 1
 		}
-		While ($watcher -ne $null)
+		While ($null -eq $watcher)
 		
 		# Once the remote process is done, retrieve the output
 		$scriptOutput = GetScriptOutput $ComputerName $scriptCommandId
@@ -112,7 +120,7 @@ function Main()
 	# The GUID from our custom WMI class. Used to get only results for this command.
 	$scriptCommandId = CreateScriptInstance $ComputerName
 	
-	if ($scriptCommandId -eq $null)
+	if ($null -eq $scriptCommandId)
 	{
 		Write-Error "Error creating remote instance."
 		exit
@@ -126,12 +134,17 @@ function Main()
 	
 	$encodedCommand = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($encodedCommand))
 	
-	Write-Host "Running the following command on: $ComputerName..."
-	Write-Host $commandString
+	if ($Silent.IsPresent -eq $false) {
+		Write-Host "Running the following command on: $ComputerName..."
+		Write-Host $commandString
+	}
 	
 	$result = ExecCommand $ComputerName $encodedCommand
 	
-	Write-Host "Result..."
+	if ($Silent.IsPresent -eq $false) {
+		Write-Host "Result..."
+	}
+
 	Write-Output $result
 }
 
